@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luca·Nex | Sim Racer, Streamer, Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        .text-gold { color: #D4AF37; }
+        .bg-gold { background-color: #D4AF37; }
+        .border-gold { border-color: #D4AF37; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+
+        /* Racing animation effect */
+        @keyframes racing-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .racing-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+            animation: racing-line 3s infinite linear;
+        }
+
+        .site-nav {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* From Uiverse.io by JaydipPrajapati1910 */
+        .loader {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            border: 4px solid #282828;
+            overflow: hidden;
+            border-radius: 50%;
+            box-shadow: -5px -5px 5px rgba(255, 255, 255, 0.1),
+                10px 10px 10px rgba(0, 0, 0, 0.4),
+                inset -5px -5px 5px rgba(255, 255, 255, 0.2),
+                inset 10px 10px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .loader:before {
+            content: "";
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            bottom: 25px;
+            z-index: 10;
+            background: #212121;
+            border-radius: 50%;
+            border: 2px solid #292929;
+            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.2),
+                inset 3px 3px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .loader span {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: linear-gradient(
+                -225deg,
+                #ff7402 0%,
+                #ffe700 50%,
+                #fff55e 100%
+            );
+            filter: blur(20px);
+            z-index: -1;
+            animation: animate 0.5s linear infinite;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .loader-label {
+            margin-bottom: 16px;
+            font-size: 14px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #cfcfcf;
+        }
+
+        .loader-overlay.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #root {
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #root.is-visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .site-nav {
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
+            }
+
+            .loader {
+                width: 120px;
+                height: 120px;
+            }
+
+            .loader:before {
+                top: 18px;
+                left: 18px;
+                right: 18px;
+                bottom: 18px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+                line-height: 1.05;
+            }
+
+            .hero-desc {
+                font-size: 1.125rem;
+            }
+
+            .hero-actions a {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .section-block {
+                padding-top: 4rem !important;
+                padding-bottom: 4rem !important;
+            }
+
+            .contact-email {
+                font-size: 1.25rem;
+                word-break: break-word;
+            }
+
+            .ai-chat-panel {
+                width: calc(100vw - 2rem);
+                height: 70vh;
+            }
+        }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react/jsx-runtime": "https://esm.sh/react@^19.2.3/jsx-runtime",
+        "react/jsx-dev-runtime": "https://esm.sh/react@^19.2.3/jsx-dev-runtime",
+        "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+      }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="loader" class="loader-overlay" aria-label="Loading" role="status">
+      <div class="loader-label">Loading...</div>
+      <div class="loader">
+        <span></span>
+      </div>
+    </div>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="react" data-type="module">
+      import React, { useState, useEffect, useMemo } from "react";
+      import ReactDOM from "react-dom/client";
+      import {
+        Trophy,
+        Gamepad2,
+        Code2,
+        ChevronRight,
+        Cpu,
+        ExternalLink,
+        Zap,
+        CheckCircle2,
+        ChevronDown,
+        MessageSquare,
+        Youtube,
+        Github,
+        Twitter
+      } from "lucide-react";
+      import { GoogleGenAI } from "@google/genai";
+
+      const translations = {
+        en: {
+          nav: {
+            about: "About",
+            racing: "Sim Racing",
+            streaming: "Streaming",
+            dev: "Development",
+            contact: "Contact",
+          },
+          hero: {
+            status: "Available for Collabs",
+            greeting: "I'm",
+            description: "Pushing limits on virtual tracks, sharing passion through streaming, and building tools to bring ideas to life.",
+            explore: "Explore Racing",
+            getInTouch: "Get In Touch",
+          },
+          roles: {
+            racer: {
+              title: "Sim Racer",
+              desc: "Continuously pushing the limits on the virtual racetrack..",
+            },
+            streamer: {
+              title: "Streamer",
+              desc: "Sharing the thrill of the race and gaming moments with the community.",
+            },
+            dev: {
+              title: "Developer",
+              desc: "Building practical web tools and software for everyday problems.",
+            },
+          },
+          about: {
+            title: "About Me",
+            subtitle: "Gamer + Creator honing skills in sim racing and development.",
+            p1: "Rather than 'professional,' I prefer 'gamer + creator' — developing practical tools and websites to make everything smoother and more personalized.",
+            feat1: "Consistency Focused",
+            feat1Desc: "Rhythm over single-lap bursts.",
+            feat2: "Independent Creator",
+            feat2Desc: "Introverted yet highly collaborative in tech.",
+          },
+          racing: {
+            title: "Sim Racing",
+            subtitle: "Pursuing better lap times and realistic driving experiences.",
+            combos: "Favorite Combos",
+            hardware: "My Hardware",
+            car: "Favorite Car",
+            track: "Favorite Tracks",
+            quote: "Consistency and rhythm, not just single-lap bursts",
+          },
+          streaming: {
+            title: "Gaming & Streaming",
+            subtitle: "Turning solo gaming into moments of playing together.",
+            mainContent: "Main Content",
+            items: [
+              "Sim racing practice, qualifying, and races.",
+              "Racing / Gaming related chats & Q&A sessions.",
+              "Frequent titles: Minecraft, MSFS, Console hits.",
+            ],
+          },
+          dev: {
+            title: "Development",
+            subtitle: "Building compact and practical solutions.",
+            projectTitle: "Web Math Calculator",
+            projectDesc: "A web-based utility for quick calculations, focusing on performance and user experience.",
+            viewProject: "View Project",
+            skills: {
+              portfolios: "Web Portfolios",
+              portfoliosDesc: "Fast, SEO-friendly landing pages and personal sites.",
+              tools: "Utility Tools",
+              toolsDesc: "Automation and efficiency tools for Windows & Web.",
+              ui: "UI/UX Design",
+              uiDesc: "Minimalist, dark-themed designs tailored for creators.",
+              proto: "Prototyping",
+              protoDesc: "Quick turnaround on simple software ideas.",
+            },
+          },
+          contact: {
+            title: "Let's Collaborate",
+            personal: "Personal Inquiries",
+            devServices: "Development Services",
+            footerNote: "All personal equipment, no advertising.",
+          },
+          ai: {
+            welcome: "Hey! I'm Luca's virtual assistant. Want to know about his racing setup, dev stack, or streaming schedule?",
+            thinking: "Luca's thinking...",
+            error: "Error connecting to the pit wall. Please try again later!",
+            lost: "Sorry, I lost my racing line there. Could you ask again?",
+            placeholder: "Ask about racing, tech...",
+            btn: "Chat with AI",
+            heading: "Ask Luca·Nex AI"
+          }
+        },
+        zh: {
+          nav: {
+            about: "关于我",
+            racing: "模拟赛车",
+            streaming: "游戏直播",
+            dev: "软件开发",
+            contact: "联系我",
+          },
+          hero: {
+            status: "欢迎合作",
+            greeting: "我是",
+            description: "在虚拟赛道上突破极限，通过直播分享热爱，并构建工具将创意变为现实。",
+            explore: "探索赛车",
+            getInTouch: "即刻联系",
+          },
+          roles: {
+            racer: {
+              title: "模拟赛车手",
+              desc: "在虚拟赛道上不断突破极限。",
+            },
+            streamer: {
+              title: "直播主",
+              desc: "与社区分享比赛的刺激和游戏瞬间。",
+            },
+            dev: {
+              title: "开发者",
+              desc: "为解决日常问题构建实用的 Web 工具和软件。",
+            },
+          },
+          about: {
+            title: "关于我",
+            subtitle: "磨炼模拟赛车与开发技能的游戏玩家 + 创作者。",
+            p1: "比起“专业人士”，我更喜欢“玩家 + 创作者”——开发实用的工具和网站，让一切变得更流畅、更个性化。",
+            feat1: "专注稳定性",
+            feat1Desc: "节奏胜过单圈爆发。",
+            feat2: "独立创作者",
+            feat2Desc: "性格内向但在技术领域非常乐于合作。",
+          },
+          racing: {
+            title: "模拟赛车",
+            subtitle: "追求更快的圈速和更真实的驾驶体验。",
+            combos: "最爱组合",
+            hardware: "我的装备",
+            car: "最爱车型",
+            track: "最爱赛道",
+            quote: "专注于稳定性和节奏，而不只是单圈爆发",
+          },
+          streaming: {
+            title: "游戏与直播",
+            subtitle: "将“独自游戏的时间”变成“与大家一起玩的时刻”。",
+            mainContent: "主要内容",
+            items: [
+              "模拟赛车练习、排位赛及正式比赛。",
+              "赛车/游戏相关的聊天与问答环节。",
+              "常玩游戏：我的世界、微软模拟飞行、各类主机游戏。",
+            ],
+          },
+          dev: {
+            title: "开发",
+            subtitle: "构建简洁实用的解决方案。",
+            projectTitle: "网页数学计算器",
+            projectDesc: "一个用于快速计算的 Web 工具，专注于性能和用户体验。",
+            viewProject: "查看项目",
+            skills: {
+              portfolios: "网页作品集",
+              portfoliosDesc: "快速、SEO 友好的落地页和个人网站。",
+              tools: "实用工具",
+              toolsDesc: "面向 Windows 和 Web 的自动化与效率工具。",
+              ui: "UI/UX 设计",
+              uiDesc: "为创作者量身定制的极简、暗黑风格设计。",
+              proto: "原型设计",
+              protoDesc: "快速实现简单的软件创意。",
+            },
+          },
+          contact: {
+            title: "期待合作",
+            personal: "个人咨询",
+            devServices: "开发服务",
+            footerNote: "均为个人设备，非广告宣传。",
+          },
+          ai: {
+            welcome: "嘿！我是 Luca 的虚拟助手。想了解他的赛车装备、开发技术栈或直播计划吗？",
+            thinking: "Luca 正在思考...",
+            error: "连接维修站出错，请稍后再试！",
+            lost: "抱歉，我偏离赛道了，能再问一次吗？",
+            placeholder: "询问关于赛车、技术的问题...",
+            btn: "AI 聊天",
+            heading: "咨询 Luca·Nex AI"
+          }
+        }
+      };
+
+      const EQUIPMENT = [
+        { category: "Wheel Base", name: "MOZA R3" },
+        { category: "VR Headset", name: "HTC VIVE PRO" },
+        { category: "GPU", name: "NVIDIA RTX 4060TI" },
+        { category: "CPU", name: "Intel Core i5-13400F" }
+      ];
+
+      const SOCIAL_LINKS = [
+        { name: "Twitch", url: "https://www.twitch.tv/sysanyou", icon: <Gamepad2 className="w-5 h-5" /> },
+        { name: "YouTube", url: "https://www.youtube.com/@sanyou-h4y", icon: <Youtube className="w-5 h-5" /> },
+        { name: "GitHub", url: "https://github.com/syweb-dev", icon: <Github className="w-5 h-5" /> },
+        { name: "Twitter", url: "https://social.lucanex.top/", icon: <Twitter className="w-5 h-5" /> }
+      ];
+
+      const toukuiImage = "toukui.png";
+
+      // AI Chat Component
+      const AIChat = ({ lang }) => {
+        const [isOpen, setIsOpen] = useState(false);
+        const [input, setInput] = useState("");
+        const t = translations[lang].ai;
+        const [messages, setMessages] = useState([
+          { role: "ai", text: t.welcome }
+        ]);
+        const [isTyping, setIsTyping] = useState(false);
+
+        // Update welcome message if language changes and chat is at start
+        useEffect(() => {
+          if (messages.length === 1 && messages[0].role === "ai") {
+            setMessages([{ role: "ai", text: t.welcome }]);
+          }
+        }, [lang]);
+
+        const handleSend = async () => {
+          if (!input.trim() || isTyping) return;
+
+          const userMsg = input.trim();
+          setMessages((prev) => [...prev, { role: "user", text: userMsg }]);
+          setInput("");
+          setIsTyping(true);
+
+          const apiKey = window.GEMINI_API_KEY || "";
+          if (!apiKey) {
+            setMessages((prev) => [...prev, { role: "ai", text: t.error }]);
+            setIsTyping(false);
+            return;
+          }
+
+          try {
+            const ai = new GoogleGenAI({ apiKey });
+            const response = await ai.models.generateContent({
+              model: "gemini-3-flash-preview",
+              contents: `You are an AI assistant for Luca·Nex's personal website. Use the following info to answer questions:
+        - Luca is a Sim Racer (iRacing, AC), Streamer (Twitch/YT), and Dev.
+        - Equipment: MOZA R3, HTC VIVE PRO, 4060TI, i5-13400f.
+        - Style: Focuses on consistency and rhythm, quite introverted, prefers single-player.
+        - Dev: Creates practical web tools like a math calculator.
+        Answer in the following language: ${lang === "zh" ? "Chinese" : "English"}.
+        User asked: ${userMsg}`,
+            });
+
+            setMessages((prev) => [...prev, { role: "ai", text: response.text || t.lost }]);
+          } catch (error) {
+            setMessages((prev) => [...prev, { role: "ai", text: t.error }]);
+          } finally {
+            setIsTyping(false);
+          }
+        };
+
+        return (
+          <div className="fixed bottom-6 right-6 z-50">
+            {isOpen ? (
+              <div className="bg-[#111] border border-gold w-80 md:w-96 h-[450px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 ai-chat-panel">
+                <div className="bg-gold p-4 flex justify-between items-center">
+                  <h3 className="text-black font-bold flex items-center gap-2">
+                    <Zap className="w-4 h-4" /> {t.heading}
+                  </h3>
+                  <button onClick={() => setIsOpen(false)} className="text-black hover:opacity-70">
+                    <ChevronDown className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {messages.map((m, i) => (
+                    <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[80%] p-3 rounded-xl text-sm ${m.role === "user" ? "bg-gold text-black rounded-tr-none" : "bg-zinc-800 text-white rounded-tl-none"}`}>
+                        {m.text}
+                      </div>
+                    </div>
+                  ))}
+                  {isTyping && <div className="text-xs text-zinc-500 animate-pulse">{t.thinking}</div>}
+                </div>
+                <div className="p-4 border-t border-zinc-800 flex gap-2">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    placeholder={t.placeholder}
+                    className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gold"
+                  />
+                  <button onClick={handleSend} className="bg-gold text-black p-2 rounded-lg hover:opacity-80">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsOpen(true)}
+                className="bg-gold text-black p-4 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center gap-2 group"
+              >
+                <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-bold">{t.btn}</span>
+                <MessageSquare className="w-6 h-6" />
+              </button>
+            )}
+          </div>
+        );
+      };
+
+      const Header = ({ lang, setLang }) => {
+        const [scrolled, setScrolled] = useState(false);
+        const t = translations[lang].nav;
+
+        useEffect(() => {
+          const handleScroll = () => setScrolled(window.scrollY > 50);
+          window.addEventListener("scroll", handleScroll);
+          return () => window.removeEventListener("scroll", handleScroll);
+        }, []);
+
+        return (
+          <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 site-nav ${scrolled ? "bg-black/80 backdrop-blur-md py-4" : "bg-transparent py-8"}`}>
+            <div className="container mx-auto px-6 flex justify-between items-center">
+              <div className="text-2xl font-black tracking-tighter font-outfit">
+                LUCA<span className="text-gold">·</span>NEX
+              </div>
+              <div className="flex items-center gap-8">
+                <div className="hidden md:flex gap-8 text-sm font-semibold uppercase tracking-widest">
+                  <a href="#about" className="hover:text-gold transition-colors">{t.about}</a>
+                  <a href="#racing" className="hover:text-gold transition-colors">{t.racing}</a>
+                  <a href="#streaming" className="hover:text-gold transition-colors">{t.streaming}</a>
+                  <a href="#dev" className="hover:text-gold transition-colors">{t.dev}</a>
+                </div>
+
+                <div className="flex items-center bg-zinc-900/50 rounded-full p-1 border border-zinc-800">
+                  <button
+                    onClick={() => setLang("en")}
+                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${lang === "en" ? "bg-gold text-black" : "text-zinc-500 hover:text-white"}`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => setLang("zh")}
+                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${lang === "zh" ? "bg-gold text-black" : "text-zinc-500 hover:text-white"}`}
+                  >
+                    中
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      const Hero = ({ lang }) => {
+        const t = translations[lang].hero;
+        return (
+          <section className="relative h-screen flex items-center overflow-hidden">
+            <div className="absolute inset-0 z-0">
+              <img
+                src={toukuiImage}
+                alt="Racing Background"
+                className="w-full h-full object-cover opacity-40"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            </div>
+            <div className="container mx-auto px-6 relative z-10">
+              <div className="max-w-4xl">
+                <div className="inline-block px-3 py-1 bg-gold text-black text-xs font-black uppercase tracking-widest mb-6 animate-bounce">
+                  {t.status}
+                </div>
+                <h1 className="text-6xl md:text-9xl font-black font-outfit uppercase leading-none mb-8 hero-title">
+                  {t.greeting} <span className="text-gold">Luca·Nex</span>
+                </h1>
+                <p className="text-xl md:text-3xl text-zinc-300 font-light max-w-2xl leading-relaxed mb-10 hero-desc">
+                  {t.description}
+                </p>
+                <div className="flex flex-wrap gap-4 hero-actions">
+                  <a href="#racing" className="px-8 py-4 border-2 border-gold text-gold font-bold uppercase tracking-tighter hover:bg-gold hover:text-black transition-all flex items-center gap-2">
+                    {t.explore} <ChevronRight className="w-5 h-5" />
+                  </a>
+                  <a href="#contact" className="px-8 py-4 bg-white text-black font-bold uppercase tracking-tighter hover:bg-gold transition-all">
+                    {t.getInTouch}
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="absolute bottom-10 left-0 right-0 racing-line" />
+          </section>
+        );
+      };
+
+      const SectionHeading = ({ title, subtitle }) => (
+        <div className="mb-16">
+          <h2 className="text-4xl md:text-6xl font-black font-outfit uppercase tracking-tighter mb-4">{title}</h2>
+          {subtitle && <p className="text-zinc-500 max-w-xl">{subtitle}</p>}
+          <div className="w-20 h-1 bg-gold mt-6" />
+        </div>
+      );
+
+      const App = () => {
+        const [lang, setLang] = useState("en");
+        const t = translations[lang];
+
+        const roles = useMemo(() => [
+          {
+            icon: <Trophy className="w-8 h-8" />,
+            title: t.roles.racer.title,
+            description: t.roles.racer.desc
+          },
+          {
+            icon: <Gamepad2 className="w-8 h-8" />,
+            title: t.roles.streamer.title,
+            description: t.roles.streamer.desc
+          },
+          {
+            icon: <Code2 className="w-8 h-8" />,
+            title: t.roles.dev.title,
+            description: t.roles.dev.desc
+          }
+        ], [lang, t]);
+
+        return (
+          <div className="min-h-screen bg-[#050505]">
+            <Header lang={lang} setLang={setLang} />
+            <Hero lang={lang} />
+
+            {/* Roles Grid */}
+            <section id="about" className="py-24 bg-[#0a0a0a] section-block">
+              <div className="container mx-auto px-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {roles.map((role, idx) => (
+                    <div key={idx} className="group p-8 bg-zinc-900/50 border border-zinc-800 hover:border-gold transition-all duration-500">
+                      <div className="text-gold mb-6 group-hover:scale-110 transition-transform duration-500">
+                        {role.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold mb-4 font-outfit uppercase">{role.title}</h3>
+                      <p className="text-zinc-400 leading-relaxed">{role.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* About Section */}
+            <section className="py-24 overflow-hidden section-block">
+              <div className="container mx-auto px-6">
+                <div className="flex flex-col md:flex-row gap-16 items-center">
+                  <div className="w-full md:w-1/2 relative">
+                    <div className="absolute -top-10 -left-10 w-40 h-40 bg-gold/10 rounded-full blur-3xl" />
+                    <img
+                      src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop"
+                      alt="Workspace"
+                      className="relative z-10 rounded-2xl grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl"
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2">
+                    <SectionHeading title={t.about.title} subtitle={t.about.subtitle} />
+                    <p className="text-zinc-300 text-lg mb-8 leading-relaxed">
+                      {t.about.p1}
+                    </p>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900 rounded-lg">
+                        <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold">
+                          <CheckCircle2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold">{t.about.feat1}</h4>
+                          <p className="text-zinc-500 text-sm">{t.about.feat1Desc}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900 rounded-lg">
+                        <div className="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-gold">
+                          <CheckCircle2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold">{t.about.feat2}</h4>
+                          <p className="text-zinc-500 text-sm">{t.about.feat2Desc}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Sim Racing Section */}
+            <section id="racing" className="py-24 bg-[#0a0a0a] relative section-block">
+              <div className="container mx-auto px-6">
+                <SectionHeading title={t.racing.title} subtitle={t.racing.subtitle} />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-8">
+                    <div className="bg-zinc-900 p-8 border-l-4 border-gold">
+                      <h3 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
+                        <Trophy className="w-5 h-5 text-gold" /> {t.racing.combos}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-xs text-zinc-500 uppercase block mb-1">{t.racing.car}</span>
+                          <span className="font-bold">BMW M2 CS</span>
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-500 uppercase block mb-1">{t.racing.track}</span>
+                          <span className="font-bold">Monza / Charlotte</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-zinc-900 p-8 border-l-4 border-gold">
+                      <h3 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
+                        <Cpu className="w-5 h-5 text-gold" /> {t.racing.hardware}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {EQUIPMENT.map((item, i) => (
+                          <div key={i} className="flex flex-col">
+                            <span className="text-xs text-zinc-500 uppercase">{item.category}</span>
+                            <span className="font-semibold text-zinc-200">{item.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative group overflow-hidden rounded-2xl">
+                    <img
+                      src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2070&auto=format&fit=crop"
+                      alt="Sim Rig"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                    />
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-center p-6">
+                        <p className="text-white font-bold text-xl uppercase italic">&quot;{t.racing.quote}&quot;</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Streaming Section */}
+            <section id="streaming" className="py-24 section-block">
+              <div className="container mx-auto px-6">
+                <SectionHeading title={t.streaming.title} subtitle={t.streaming.subtitle} />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                  <div>
+                    <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-zinc-800 shadow-2xl">
+                      <img
+                        src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
+                        alt="Streaming Setup"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-4 left-4 bg-red-600 px-3 py-1 rounded-sm text-xs font-bold animate-pulse">LIVE SOON</div>
+                    </div>
+                  </div>
+                  <div className="space-y-6">
+                    <h3 className="text-3xl font-bold font-outfit">{t.streaming.mainContent}</h3>
+                    <ul className="space-y-4">
+                      {t.streaming.items.map((item, i) => (
+                        <li key={i} className="flex items-center gap-4 text-zinc-300">
+                          <ChevronRight className="w-5 h-5 text-gold" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex gap-4 pt-6">
+                      <a href="https://www.twitch.tv/sysanyou" className="flex-1 py-4 bg-[#9146FF] text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                         Twitch
+                      </a>
+                      <a href="https://www.youtube.com/@sanyou-h4y" className="flex-1 py-4 bg-[#FF0000] text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                         YouTube
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Development Section */}
+            <section id="dev" className="py-24 bg-[#0a0a0a] section-block">
+              <div className="container mx-auto px-6">
+                <SectionHeading title={t.dev.title} subtitle={t.dev.subtitle} />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="bg-zinc-900/50 p-10 rounded-2xl border border-zinc-800 hover:border-gold transition-all group">
+                    <div className="mb-8 p-4 bg-gold/10 inline-block rounded-xl text-gold group-hover:bg-gold group-hover:text-black transition-colors">
+                      <Code2 className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4">{t.dev.projectTitle}</h3>
+                    <p className="text-zinc-400 mb-8">{t.dev.projectDesc}</p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {["React", "TypeScript", "Tailwind"].map((tag) => (
+                        <span key={tag} className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-zinc-300">{tag}</span>
+                      ))}
+                    </div>
+                    <a href="https://github.com/syweb-dev/Web-based-math-calculator" className="flex items-center gap-2 text-gold font-bold group-hover:underline">
+                      {t.dev.viewProject} <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                      <h4 className="font-bold mb-2">{t.dev.skills.portfolios}</h4>
+                      <p className="text-sm text-zinc-500">{t.dev.skills.portfoliosDesc}</p>
+                    </div>
+                    <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                      <h4 className="font-bold mb-2">{t.dev.skills.tools}</h4>
+                      <p className="text-sm text-zinc-500">{t.dev.skills.toolsDesc}</p>
+                    </div>
+                    <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                      <h4 className="font-bold mb-2">{t.dev.skills.ui}</h4>
+                      <p className="text-sm text-zinc-500">{t.dev.skills.uiDesc}</p>
+                    </div>
+                    <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
+                      <h4 className="font-bold mb-2">{t.dev.skills.proto}</h4>
+                      <p className="text-sm text-zinc-500">{t.dev.skills.protoDesc}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Contact Section */}
+            <section id="contact" className="py-32 bg-gold text-black section-block">
+              <div className="container mx-auto px-6 text-center">
+                <h2 className="text-5xl md:text-8xl font-black font-outfit uppercase tracking-tighter mb-12">{t.contact.title}</h2>
+                <div className="flex flex-wrap justify-center gap-12">
+                  <div className="text-center">
+                    <span className="block text-xs font-black uppercase tracking-widest mb-4 opacity-70">{t.contact.personal}</span>
+                    <a href="mailto:sanyou123666@gmail.com" className="text-2xl md:text-4xl font-bold underline hover:opacity-70 transition-opacity contact-email">sanyou123666@gmail.com</a>
+                  </div>
+                  <div className="text-center">
+                    <span className="block text-xs font-black uppercase tracking-widest mb-4 opacity-70">{t.contact.devServices}</span>
+                    <a href="mailto:you.san1@icloud.com" className="text-2xl md:text-4xl font-bold underline hover:opacity-70 transition-opacity contact-email">you.san1@icloud.com</a>
+                  </div>
+                </div>
+
+                <div className="mt-16 flex justify-center gap-8">
+                  {SOCIAL_LINKS.map((link) => (
+                    <a key={link.name} href={link.url} className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center hover:bg-black hover:text-gold transition-all">
+                      {link.icon}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="py-12 bg-black text-center text-zinc-600 text-sm">
+              <div className="container mx-auto px-6">
+                <div className="text-2xl font-black tracking-tighter font-outfit text-white mb-6">
+                  LUCA<span className="text-gold">·</span>NEX
+                </div>
+                <p>
+                  © {new Date().getFullYear()} Luca·Nex. {t.contact.footerNote} Servers are located
+                  in South Korea 🇰🇷.
+                </p>
+                <div className="mt-4 flex justify-center gap-4">
+                  <a href="https://social.lucanex.top/" className="hover:text-gold">Social Media</a>
+                  <span>•</span>
+                  <a href="https://github.com/syweb-dev" className="hover:text-gold">GitHub</a>
+                </div>
+              </div>
+            </footer>
+
+            {/* AI Assistant */}
+            <AIChat lang={lang} />
+          </div>
+        );
+      };
+
+      const rootElement = document.getElementById("root");
+      if (!rootElement) {
+        throw new Error("Could not find root element to mount to");
+      }
+
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+
+      window.setTimeout(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.classList.add("is-hidden");
+        rootElement.classList.add("is-visible");
+      }, 3000);
+    </script>
+</body>
+</html>
