@@ -285,6 +285,8 @@
             subtitle: "Building compact and practical solutions.",
             projectTitle: "Web Math Calculator",
             projectDesc: "A web-based utility for quick calculations, focusing on performance and user experience.",
+            projectTitle2: "Family ERP",
+            projectDesc2: "LUCA.NEX ERP is a family asset lifecycle management system, providing digital physical assets, centralized digital subscriptions, intelligent process management and family information sharing.",
             viewProject: "View Project",
             skills: {
               portfolios: "Web Portfolios",
@@ -374,7 +376,9 @@
             title: "开发",
             subtitle: "构建简洁实用的解决方案。",
             projectTitle: "网页数学计算器",
-            projectDesc: "一个用于快速计算的 Web 工具，专注于性能和用户体验。",
+            projectDesc: "一个用于快速计算的 Web 工具,专注于性能和用户体验。",
+            projectTitle2: "家庭ERP",
+            projectDesc2: "LUCA.NEX ERP 是一款家庭资产全生命周期管理系统,提供实体资产数字化、数字订阅集中化、智能流程管理及家庭信息共享功能。",
             viewProject: "查看项目",
             skills: {
               portfolios: "网页作品集",
@@ -796,7 +800,7 @@
               <div className="container mx-auto px-6">
                 <SectionHeading title={t.dev.title} subtitle={t.dev.subtitle} />
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                   <div className="bg-zinc-900/50 p-10 rounded-2xl border border-zinc-800 hover:border-gold transition-all group">
                     <div className="mb-8 p-4 bg-gold/10 inline-block rounded-xl text-gold group-hover:bg-gold group-hover:text-black transition-colors">
                       <Code2 className="w-8 h-8" />
@@ -813,7 +817,25 @@
                     </a>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-zinc-900/50 p-10 rounded-2xl border border-zinc-800 hover:border-gold transition-all group">
+                    <div className="mb-8 p-4 bg-gold/10 inline-block rounded-xl text-gold group-hover:bg-gold group-hover:text-black transition-colors">
+                      <Code2 className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4">{t.dev.projectTitle2}</h3>
+                    <p className="text-zinc-400 mb-8">{t.dev.projectDesc2}</p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {["React", "Node.js", "SQLite"].map((tag) => (
+                        <span key={tag} className="px-3 py-1 bg-zinc-800 rounded-full text-xs font-medium text-zinc-300">{tag}</span>
+                      ))}
+                    </div>
+                    <a href="https://github.com/syweb-dev/LUCA-family-erp?tab=readme-ov-file" className="flex items-center gap-2 text-gold font-bold group-hover:underline">
+                      {t.dev.viewProject} <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:col-span-2">
                     <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
                       <h4 className="font-bold mb-2">{t.dev.skills.portfolios}</h4>
                       <p className="text-sm text-zinc-500">{t.dev.skills.portfoliosDesc}</p>
